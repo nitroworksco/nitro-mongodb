@@ -1,0 +1,21 @@
+name: Stop MongoDB Atlas Instance
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  stop-and-start:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Stop MongoDB Atlas instance
+        run: |
+          curl --user ${{ secrets.ATLAS_USERNAME }}:${{ secrets.ATLAS_PASSWORD }} --digest --include --request PATCH "https://cloud.mongodb.com/api/atlas/v1.0/groups/${{ secrets.ATLAS_PROJECT }}/clusters/${{ secrets.ATLAS_CLUSTER }}/processes/mongod-1?pretty=true" --header "Content-Type: application/json" --data-raw '{ "action": "STOP" }'
+
+      - name: Wait for instance to stop
+        run: |
+          sleep 60
