@@ -3,6 +3,8 @@ name: Stop MongoDB Atlas Instance
 on:
   push:
     branches: [ main ]
+  schedule:
+    - cron: '0 0 * * *' # Runs every day at midnight UTC
 
 jobs:
   stop-and-start:
