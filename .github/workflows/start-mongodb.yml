@@ -1,0 +1,23 @@
+name: Start MongoDB Atlas Instance
+
+on:
+  push:
+    branches: [ main ]
+  schedule:
+    - cron: '0 8 * * 1-5' # Runs every day at 08 AM BRT
+
+jobs:
+  stop-and-start:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Start MongoDB Atlas instance
+        run: |
+          curl --user ${{ secrets.ATLAS_USERNAME }}:${{ secrets.ATLAS_PASSWORD }} --digest --include --request PATCH "https://cloud.mongodb.com/api/atlas/v1.0/groups/${{ secrets.ATLAS_PROJECT }}/clusters/${{ secrets.ATLAS_CLUSTER }}/processes/mongod-1?pretty=true" --header "Content-Type: application/json" --data-raw '{ "action": "START" }'
+
+      - name: Wait for instance to start
+        run: |
+          sleep 60
